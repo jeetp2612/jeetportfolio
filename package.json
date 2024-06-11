@@ -1,7 +1,7 @@
 {
   "name": "personal-portfolio",
   "version": "0.1.0",
-  "homepage": "https://killer-abhi.github.io/Portfolio",
+  "homepage": "https://jeetportfolio.vercel.app/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
