@@ -15,8 +15,7 @@ const icons = [<LightModeIcon />, <DarkModeIcon />, <ContrastIcon />];
 const Mode = () => {
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(false);
-  const [iconIndex, setIconIndex] = useState(0);
-  const [mode, setMode] = useState("light");
+  const [iconIndex, setIcon] = useState(0);
 
   const fetchSystemMode = useCallback(() => {
     if (
@@ -31,24 +30,22 @@ const Mode = () => {
 
   useEffect(() => {
     const mode = fetchSystemMode();
-    setMode(mode);
-    setIconIndex(mode === "light" ? 0 : 1);
+    handleModeChange(mode);
   }, [fetchSystemMode]);
 
-  const handleModeChange = useCallback((index) => {
-    let newMode;
-    if (index === 0) {
-      newMode = "light";
-    } else if (index === 1) {
-      newMode = "dark";
+  const handleModeChange = useCallback((mode) => {
+    let index;
+    if (mode === "light") {
+      index = 0;
+    } else if (mode === "dark") {
+      index = 1;
     } else {
-      newMode = fetchSystemMode();
+      index = 2;
     }
-
-    setIconIndex(index);
-    dispatch(themeActions.setMode(newMode));
+    setIcon(index);
+    dispatch(themeActions.setMode(mode));
     setIsVisible(false);
-  }, [dispatch, fetchSystemMode]);
+  }, [dispatch]);
 
   const handleDropdown = useCallback(() => {
     setIsVisible((prevVisible) => !prevVisible);
@@ -57,17 +54,17 @@ const Mode = () => {
   return (
     <div className="theme">
       <ul className="dropdown" style={{ display: isVisible ? "block" : "none" }}>
-        <li className="modeItem" onClick={() => handleModeChange(0)}>
+        <li className="modeItem" onClick={() => handleModeChange("light")}>
           <LightModeIcon />
           Light
           <DoneIcon style={{ color: iconIndex === 0 ? "inherit" : "transparent" }} />
         </li>
-        <li className="modeItem" onClick={() => handleModeChange(1)}>
+        <li className="modeItem" onClick={() => handleModeChange("dark")}>
           <DarkModeIcon />
           Dark
           <DoneIcon style={{ color: iconIndex === 1 ? "inherit" : "transparent" }} />
         </li>
-        <li className="modeItem" onClick={() => handleModeChange(2)}>
+        <li className="modeItem" onClick={() => handleModeChange("auto")}>
           <ContrastIcon />
           Auto
           <DoneIcon style={{ color: iconIndex === 2 ? "inherit" : "transparent" }} />
