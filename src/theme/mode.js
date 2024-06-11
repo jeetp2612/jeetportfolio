@@ -1,5 +1,5 @@
 import "./mode.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { themeActions } from "../store/theme";
 
@@ -15,72 +15,62 @@ const icons = [<LightModeIcon />, <DarkModeIcon />, <ContrastIcon />];
 const Mode = () => {
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(false);
-  const [iconIndex, setIcon] = useState(0);
+  const [iconIndex, setIconIndex] = useState(0);
+  const [mode, setMode] = useState("light");
 
-  let mode = "light";
-  function fetchSystemMode() {
+  const fetchSystemMode = useCallback(() => {
     if (
       window.matchMedia &&
       window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
-      mode = "dark";
+      return "dark";
     } else {
-      mode = "light";
+      return "light";
     }
-  }
+  }, []);
 
   useEffect(() => {
     const mode = fetchSystemMode();
-    handleModeChange(mode);
-  }, [fetchSystemMode, handleModeChange]);
+    setMode(mode);
+    setIconIndex(mode === "light" ? 0 : 1);
+  }, [fetchSystemMode]);
 
-  function handleModeChange(index) {
+  const handleModeChange = useCallback((index) => {
+    let newMode;
     if (index === 0) {
-      mode = "light";
+      newMode = "light";
     } else if (index === 1) {
-      mode = "dark";
+      newMode = "dark";
     } else {
-      fetchSystemMode();
+      newMode = fetchSystemMode();
     }
-    setIcon(index);
-    const listItems = document.getElementsByClassName("modeItem");
-    for (let i = 0; i < 3; i++) {
-      listItems[i].classList.remove("activeMode");
-    }
-    listItems[index].classList.add("activeMode");
 
-    dispatch(themeActions.setMode(mode));
+    setIconIndex(index);
+    dispatch(themeActions.setMode(newMode));
     setIsVisible(false);
-  }
-  function handleDropdown() {
-    setIsVisible(!isVisible);
-  }
+  }, [dispatch, fetchSystemMode]);
+
+  const handleDropdown = useCallback(() => {
+    setIsVisible((prevVisible) => !prevVisible);
+  }, []);
+
   return (
     <div className="theme">
-      <ul
-        className="dropdown"
-        style={{ display: isVisible ? "block" : "none" }}
-      >
-        <li className="modeItem" onClick={(e) => handleModeChange(0)}>
+      <ul className="dropdown" style={{ display: isVisible ? "block" : "none" }}>
+        <li className="modeItem" onClick={() => handleModeChange(0)}>
           <LightModeIcon />
           Light
-          <DoneIcon
-            style={{ color: iconIndex === 0 ? "inherit" : "transparent" }}
-          />
+          <DoneIcon style={{ color: iconIndex === 0 ? "inherit" : "transparent" }} />
         </li>
-        <li className="modeItem" onClick={(e) => handleModeChange(1)}>
+        <li className="modeItem" onClick={() => handleModeChange(1)}>
           <DarkModeIcon />
           Dark
-          <DoneIcon
-            style={{ color: iconIndex === 1 ? "inherit" : "transparent" }}
-          />
+          <DoneIcon style={{ color: iconIndex === 1 ? "inherit" : "transparent" }} />
         </li>
-        <li className="modeItem" onClick={(e) => handleModeChange(2)}>
+        <li className="modeItem" onClick={() => handleModeChange(2)}>
           <ContrastIcon />
           Auto
-          <DoneIcon
-            style={{ color: iconIndex === 2 ? "inherit" : "transparent" }}
-          />
+          <DoneIcon style={{ color: iconIndex === 2 ? "inherit" : "transparent" }} />
         </li>
       </ul>
       <div className="modeBtn">
@@ -92,4 +82,5 @@ const Mode = () => {
     </div>
   );
 };
+
 export default Mode;
