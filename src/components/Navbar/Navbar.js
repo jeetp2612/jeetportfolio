@@ -73,6 +73,8 @@ const Navbar = () => {
 
 
     return (
+
+        
         <div className="main">
             <div className="navbar" style={{ backgroundColor: bgColor }}>
                 <div className="logoContainer">
