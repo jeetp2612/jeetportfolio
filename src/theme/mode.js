@@ -17,22 +17,6 @@ const Mode = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [iconIndex, setIcon] = useState(0);
 
-  const fetchSystemMode = useCallback(() => {
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      return "dark";
-    } else {
-      return "light";
-    }
-  }, []);
-
-  useEffect(() => {
-    const mode = fetchSystemMode();
-    handleModeChange(mode);
-  }, [fetchSystemMode]);
-
   const handleModeChange = useCallback((mode) => {
     let index;
     if (mode === "light") {
@@ -50,6 +34,22 @@ const Mode = () => {
   const handleDropdown = useCallback(() => {
     setIsVisible((prevVisible) => !prevVisible);
   }, []);
+
+  const fetchSystemMode = useCallback(() => {
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      return "dark";
+    } else {
+      return "light";
+    }
+  }, []);
+
+  useEffect(() => {
+    const mode = fetchSystemMode();
+    handleModeChange(mode);
+  }, [fetchSystemMode, handleModeChange]);
 
   return (
     <div className="theme">
